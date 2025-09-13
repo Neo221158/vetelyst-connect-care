@@ -14,7 +14,351 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      case_documents: {
+        Row: {
+          case_id: string
+          created_at: string
+          description: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id: string
+          is_primary: boolean | null
+          uploaded_by: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          description?: string | null
+          file_name: string
+          file_path: string
+          file_size: number
+          file_type: string
+          id?: string
+          is_primary?: boolean | null
+          uploaded_by: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          description?: string | null
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          is_primary?: boolean | null
+          uploaded_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_documents_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_documents_uploaded_by_fkey"
+            columns: ["uploaded_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_responses: {
+        Row: {
+          case_id: string
+          created_at: string
+          diagnosis: string | null
+          follow_up_date: string | null
+          follow_up_needed: boolean | null
+          id: string
+          is_final_response: boolean | null
+          prognosis: string | null
+          referral_recommendations: string | null
+          response_text: string
+          specialist_id: string
+          treatment_recommendations: string | null
+          updated_at: string
+        }
+        Insert: {
+          case_id: string
+          created_at?: string
+          diagnosis?: string | null
+          follow_up_date?: string | null
+          follow_up_needed?: boolean | null
+          id?: string
+          is_final_response?: boolean | null
+          prognosis?: string | null
+          referral_recommendations?: string | null
+          response_text: string
+          specialist_id: string
+          treatment_recommendations?: string | null
+          updated_at?: string
+        }
+        Update: {
+          case_id?: string
+          created_at?: string
+          diagnosis?: string | null
+          follow_up_date?: string | null
+          follow_up_needed?: boolean | null
+          id?: string
+          is_final_response?: boolean | null
+          prognosis?: string | null
+          referral_recommendations?: string | null
+          response_text?: string
+          specialist_id?: string
+          treatment_recommendations?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_responses_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_responses_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      case_timeline: {
+        Row: {
+          action: string
+          actor_id: string
+          case_id: string
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          case_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          case_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_timeline_actor_id_fkey"
+            columns: ["actor_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_timeline_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      cases: {
+        Row: {
+          accepted_at: string | null
+          age_months: number | null
+          age_years: number | null
+          body_condition_score: number | null
+          breed: string | null
+          chief_complaint: string
+          completed_at: string | null
+          complexity_rating: number | null
+          created_at: string
+          current_medications: string | null
+          diagnostic_results: string | null
+          differential_diagnoses: string | null
+          estimated_hours: number | null
+          gender: string | null
+          id: string
+          medical_history: Json | null
+          patient_name: string
+          physical_examination: string | null
+          presenting_complaint: string
+          previous_consultations: string | null
+          questions_for_specialist: string | null
+          referring_vet_id: string
+          severity_score: number | null
+          specialist_id: string | null
+          specialty_requested: Database["public"]["Enums"]["specialty_area"]
+          species: Database["public"]["Enums"]["animal_species"]
+          status: Database["public"]["Enums"]["case_status"]
+          submitted_at: string
+          surgery_type: string | null
+          updated_at: string
+          urgency: Database["public"]["Enums"]["case_urgency"]
+          vital_signs: Json | null
+          weight_kg: number | null
+          working_diagnosis: string | null
+        }
+        Insert: {
+          accepted_at?: string | null
+          age_months?: number | null
+          age_years?: number | null
+          body_condition_score?: number | null
+          breed?: string | null
+          chief_complaint: string
+          completed_at?: string | null
+          complexity_rating?: number | null
+          created_at?: string
+          current_medications?: string | null
+          diagnostic_results?: string | null
+          differential_diagnoses?: string | null
+          estimated_hours?: number | null
+          gender?: string | null
+          id?: string
+          medical_history?: Json | null
+          patient_name: string
+          physical_examination?: string | null
+          presenting_complaint: string
+          previous_consultations?: string | null
+          questions_for_specialist?: string | null
+          referring_vet_id: string
+          severity_score?: number | null
+          specialist_id?: string | null
+          specialty_requested: Database["public"]["Enums"]["specialty_area"]
+          species: Database["public"]["Enums"]["animal_species"]
+          status?: Database["public"]["Enums"]["case_status"]
+          submitted_at?: string
+          surgery_type?: string | null
+          updated_at?: string
+          urgency?: Database["public"]["Enums"]["case_urgency"]
+          vital_signs?: Json | null
+          weight_kg?: number | null
+          working_diagnosis?: string | null
+        }
+        Update: {
+          accepted_at?: string | null
+          age_months?: number | null
+          age_years?: number | null
+          body_condition_score?: number | null
+          breed?: string | null
+          chief_complaint?: string
+          completed_at?: string | null
+          complexity_rating?: number | null
+          created_at?: string
+          current_medications?: string | null
+          diagnostic_results?: string | null
+          differential_diagnoses?: string | null
+          estimated_hours?: number | null
+          gender?: string | null
+          id?: string
+          medical_history?: Json | null
+          patient_name?: string
+          physical_examination?: string | null
+          presenting_complaint?: string
+          previous_consultations?: string | null
+          questions_for_specialist?: string | null
+          referring_vet_id?: string
+          severity_score?: number | null
+          specialist_id?: string | null
+          specialty_requested?: Database["public"]["Enums"]["specialty_area"]
+          species?: Database["public"]["Enums"]["animal_species"]
+          status?: Database["public"]["Enums"]["case_status"]
+          submitted_at?: string
+          surgery_type?: string | null
+          updated_at?: string
+          urgency?: Database["public"]["Enums"]["case_urgency"]
+          vital_signs?: Json | null
+          weight_kg?: number | null
+          working_diagnosis?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cases_referring_vet_id_fkey"
+            columns: ["referring_vet_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "cases_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          bio: string | null
+          clinic_name: string | null
+          created_at: string
+          first_name: string
+          id: string
+          last_name: string
+          license_number: string | null
+          phone: string | null
+          rating: number | null
+          response_time_hours: number | null
+          role: Database["public"]["Enums"]["user_role"]
+          specialty_area: Database["public"]["Enums"]["specialty_area"] | null
+          total_reviews: number | null
+          updated_at: string
+          user_id: string
+          years_experience: number | null
+        }
+        Insert: {
+          bio?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          first_name: string
+          id?: string
+          last_name: string
+          license_number?: string | null
+          phone?: string | null
+          rating?: number | null
+          response_time_hours?: number | null
+          role: Database["public"]["Enums"]["user_role"]
+          specialty_area?: Database["public"]["Enums"]["specialty_area"] | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id: string
+          years_experience?: number | null
+        }
+        Update: {
+          bio?: string | null
+          clinic_name?: string | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          license_number?: string | null
+          phone?: string | null
+          rating?: number | null
+          response_time_hours?: number | null
+          role?: Database["public"]["Enums"]["user_role"]
+          specialty_area?: Database["public"]["Enums"]["specialty_area"] | null
+          total_reviews?: number | null
+          updated_at?: string
+          user_id?: string
+          years_experience?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +367,27 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      animal_species: "dog" | "cat" | "horse" | "bird" | "rabbit" | "other"
+      case_status:
+        | "submitted"
+        | "reviewing"
+        | "in_progress"
+        | "completed"
+        | "follow_up_needed"
+        | "declined"
+      case_urgency: "routine" | "urgent" | "emergency"
+      specialty_area:
+        | "anesthesia"
+        | "cardiology"
+        | "dermatology"
+        | "emergency"
+        | "internal_medicine"
+        | "neurology"
+        | "oncology"
+        | "ophthalmology"
+        | "orthopedics"
+        | "surgery"
+      user_role: "referring_vet" | "specialist"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +514,30 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      animal_species: ["dog", "cat", "horse", "bird", "rabbit", "other"],
+      case_status: [
+        "submitted",
+        "reviewing",
+        "in_progress",
+        "completed",
+        "follow_up_needed",
+        "declined",
+      ],
+      case_urgency: ["routine", "urgent", "emergency"],
+      specialty_area: [
+        "anesthesia",
+        "cardiology",
+        "dermatology",
+        "emergency",
+        "internal_medicine",
+        "neurology",
+        "oncology",
+        "ophthalmology",
+        "orthopedics",
+        "surgery",
+      ],
+      user_role: ["referring_vet", "specialist"],
+    },
   },
 } as const
