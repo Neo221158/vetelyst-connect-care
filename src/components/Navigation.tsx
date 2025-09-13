@@ -29,6 +29,9 @@ const Navigation = () => {
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
+            <a href="/analytics" className="text-muted-foreground hover:text-foreground transition-colors">
+              Analytics
+            </a>
           </div>
 
           {/* Desktop CTA Buttons */}
