@@ -140,7 +140,7 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
       const { error } = await supabase
         .from('cases')
         .update({ 
-          status,
+          status: status as any,
           ...(status === 'completed' ? { completed_at: new Date().toISOString() } : {})
         })
         .eq('id', caseId);
@@ -281,7 +281,7 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
                     'neurological': { icon: Brain, label: 'Neurological' },
                     'hepatic': { icon: FileText, label: 'Hepatic' },
                     'renal': { icon: FileText, label: 'Renal' }
-                  }).map(([key, { icon: Icon, label }]) => (
+                  }).map(([key, { icon: Icon, label }]: [string, any]) => (
                     <Collapsible key={key}>
                       <CollapsibleTrigger className="flex items-center justify-between w-full p-3 rounded-lg border hover:bg-accent">
                         <div className="flex items-center gap-2">
@@ -320,10 +320,10 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
                   </CardHeader>
                   <CardContent>
                     <div className="grid grid-cols-2 gap-4">
-                      {Object.entries(vitalSigns).map(([key, value]) => (
+                      {Object.entries(vitalSigns).map(([key, value]: [string, any]) => (
                         <div key={key}>
                           <span className="text-sm font-medium capitalize">{key.replace('_', ' ')}: </span>
-                          <span className="text-sm">{value}</span>
+                          <span className="text-sm">{String(value)}</span>
                         </div>
                       ))}
                     </div>

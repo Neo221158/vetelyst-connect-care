@@ -34,33 +34,33 @@ interface DocumentViewerProps {
   caseId: string;
 }
 
+const getFileIcon = (fileType: string) => {
+  if (fileType.startsWith('image/')) {
+    return <Image className="h-4 w-4" />;
+  }
+  return <FileText className="h-4 w-4" />;
+};
+
+const getFileTypeColor = (fileType: string) => {
+  if (fileType.startsWith('image/')) return 'bg-green-100 text-green-800';
+  if (fileType === 'application/pdf') return 'bg-red-100 text-red-800';
+  return 'bg-blue-100 text-blue-800';
+};
+
+const formatFileSize = (bytes: number) => {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+};
+
 export const DocumentViewer = ({ documents, caseId }: DocumentViewerProps) => {
   const [selectedDocument, setSelectedDocument] = useState<Document | null>(null);
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [imageZoom, setImageZoom] = useState(100);
   const [imageRotation, setImageRotation] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  const getFileIcon = (fileType: string) => {
-    if (fileType.startsWith('image/')) {
-      return <Image className="h-4 w-4" />;
-    }
-    return <FileText className="h-4 w-4" />;
-  };
-
-  const getFileTypeColor = (fileType: string) => {
-    if (fileType.startsWith('image/')) return 'bg-green-100 text-green-800';
-    if (fileType === 'application/pdf') return 'bg-red-100 text-red-800';
-    return 'bg-blue-100 text-blue-800';
-  };
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  };
 
   const getSignedUrl = async (filePath: string) => {
     try {
@@ -448,12 +448,4 @@ const DocumentViewerDialog = ({
       </DialogContent>
     </Dialog>
   );
-};
-
-const formatFileSize = (bytes: number) => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
 };

@@ -210,7 +210,7 @@ export const CaseQueue = ({ onCaseSelect, selectedCaseId }: CaseQueueProps) => {
               <div className="text-2xl font-bold text-foreground">{cases.length}</div>
               <div className="text-sm text-muted-foreground">Total Cases</div>
             </div>
-            {Object.entries(urgencyStats).map(([urgency, count]) => (
+            {Object.entries(urgencyStats).map(([urgency, count]: [string, any]) => (
               <div key={urgency} className="text-center">
                 <div className="text-2xl font-bold text-foreground">{count}</div>
                 <Badge variant={urgency === 'emergency' ? 'destructive' : urgency === 'urgent' ? 'secondary' : 'outline'} className="text-xs">
