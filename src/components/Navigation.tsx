@@ -29,24 +29,28 @@ const Navigation = () => {
             <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
             </a>
-            <a href="/analytics" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/analytics" className="text-muted-foreground hover:text-foreground transition-colors">
               Analytics
-            </a>
+            </Link>
           </div>
 
           {/* Desktop CTA Buttons */}
           <div className="hidden md:flex items-center space-x-4">
-            <Button variant="ghost">
-              Sign In
-            </Button>
+            <Link to="/auth">
+              <Button variant="ghost">
+                Sign In
+              </Button>
+            </Link>
             <Link to="/dashboard">
               <Button variant="medical">
                 View Dashboard
               </Button>
             </Link>
-            <Button variant="default">
-              Get Started
-            </Button>
+            <Link to="/auth">
+              <Button variant="default">
+                Get Started
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -72,17 +76,21 @@ const Navigation = () => {
                 Pricing
               </a>
               <div className="flex flex-col space-y-2 pt-4">
-                <Button variant="ghost" className="justify-start">
-                  Sign In
-                </Button>
+                <Link to="/auth">
+                  <Button variant="ghost" className="justify-start w-full">
+                    Sign In
+                  </Button>
+                </Link>
                 <Link to="/dashboard">
                   <Button variant="medical" className="justify-start w-full">
                     View Dashboard
                   </Button>
                 </Link>
-                <Button variant="default" className="justify-start">
-                  Get Started
-                </Button>
+                <Link to="/auth">
+                  <Button variant="default" className="justify-start w-full">
+                    Get Started
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

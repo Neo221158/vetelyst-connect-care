@@ -16,7 +16,7 @@ import {
   User
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 
 export default function Dashboard() {
   const { user, loading } = useAuth();
@@ -41,8 +41,7 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    navigate('/auth');
-    return null;
+    return <Navigate to="/auth" replace />;
   }
 
   return (
