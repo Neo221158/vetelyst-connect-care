@@ -166,7 +166,6 @@ const styles = StyleSheet.create({
     color: '#ffffff',
   },
   table: {
-    display: 'table',
     width: '100%',
     borderStyle: 'solid',
     borderWidth: 1,

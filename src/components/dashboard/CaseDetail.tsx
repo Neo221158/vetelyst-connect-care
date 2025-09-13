@@ -429,16 +429,6 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
               />
             </TabsContent>
           </Tabs>
-              <ReportGenerator 
-                caseId={caseId} 
-                caseData={caseData}
-                onReportGenerated={() => {
-                  fetchCaseData();
-                  fetchTimeline();
-                }} 
-              />
-            </TabsContent>
-          </Tabs>
         </div>
 
         {/* Sidebar */}
