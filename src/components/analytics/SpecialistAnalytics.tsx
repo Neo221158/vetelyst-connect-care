@@ -75,7 +75,7 @@ export const SpecialistAnalytics = ({ data, userProfile, dateRange }: Specialist
     { month: 'Jan', consultations: 5400, reports: 1200, total: 6600 },
     { month: 'Feb', consultations: 6240, reports: 1440, total: 7680 },
     { month: 'Mar', consultations: 5760, reports: 1320, total: 7080 },
-    { month: 'Apr', categories: 6960, reports: 1680, total: 8640 },
+    { month: 'Apr', consultations: 6960, reports: 1680, total: 8640 },
     { month: 'May', consultations: 6600, reports: 1500, total: 8100 },
     { month: 'Jun', consultations: 7440, reports: 1800, total: 9240 }
   ];
@@ -204,12 +204,7 @@ export const SpecialistAnalytics = ({ data, userProfile, dateRange }: Specialist
                     strokeWidth={3}
                     name="Rating"
                   />
-                  <Bar 
-                    yAxisId="right"
-                    dataKey="reviews" 
-                    fill="hsl(var(--secondary) / 0.6)" 
-                    name="Reviews"
-                  />
+                  {/* Bar cannot be used in LineChart */}
                 </LineChart>
               </ResponsiveContainer>
             </div>
@@ -360,14 +355,7 @@ export const SpecialistAnalytics = ({ data, userProfile, dateRange }: Specialist
                   fillOpacity={0.6}
                   name="Complex Cases %"
                 />
-                <Line 
-                  yAxisId="right"
-                  type="monotone" 
-                  dataKey="success" 
-                  stroke="hsl(var(--primary))" 
-                  strokeWidth={3}
-                  name="Success Rate %"
-                />
+                {/* Line cannot be used in AreaChart */}
               </AreaChart>
             </ResponsiveContainer>
           </div>

@@ -191,20 +191,15 @@ export const PlatformAnalytics = ({ data, userProfile, dateRange }: PlatformAnal
                   fill="hsl(var(--primary) / 0.6)" 
                   name="Active Users"
                 />
-                <Bar 
+                <Area 
                   yAxisId="left"
+                  type="monotone" 
                   dataKey="newRegistrations" 
-                  fill="hsl(var(--secondary) / 0.8)" 
+                  stroke="hsl(var(--secondary))" 
+                  fill="hsl(var(--secondary) / 0.4)" 
                   name="New Registrations"
                 />
-                <Line 
-                  yAxisId="right"
-                  type="monotone" 
-                  dataKey="retention" 
-                  stroke="hsl(var(--accent))" 
-                  strokeWidth={3}
-                  name="Retention %"
-                />
+                {/* Line and Bar cannot be mixed in AreaChart */}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -247,14 +242,7 @@ export const PlatformAnalytics = ({ data, userProfile, dateRange }: PlatformAnal
                     fillOpacity={0.6}
                     name="Pending Cases"
                   />
-                  <Line 
-                    yAxisId="right"
-                    type="monotone" 
-                    dataKey="success" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={3}
-                    name="Success Rate %"
-                  />
+                  {/* Line cannot be used in AreaChart */}
                 </AreaChart>
               </ResponsiveContainer>
             </div>
@@ -451,13 +439,7 @@ export const PlatformAnalytics = ({ data, userProfile, dateRange }: PlatformAnal
                   fillOpacity={0.8}
                   name="Veterinarians"
                 />
-                <Line 
-                  type="monotone" 
-                  dataKey="connections" 
-                  stroke="hsl(var(--accent))" 
-                  strokeWidth={3}
-                  name="Total Connections"
-                />
+                {/* Line cannot be used in AreaChart */}
               </AreaChart>
             </ResponsiveContainer>
           </div>

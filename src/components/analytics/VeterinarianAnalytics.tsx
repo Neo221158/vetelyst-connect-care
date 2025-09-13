@@ -117,14 +117,7 @@ export const VeterinarianAnalytics = ({ data, userProfile, dateRange }: Veterina
                   fill="hsl(var(--secondary) / 0.6)" 
                   name="Successful Outcomes"
                 />
-                <Line 
-                  yAxisId="right"
-                  type="monotone" 
-                  dataKey="satisfaction" 
-                  stroke="hsl(var(--accent))" 
-                  strokeWidth={3}
-                  name="Satisfaction Score"
-                />
+                {/* Satisfaction line cannot be used with AreaChart */}
               </AreaChart>
             </ResponsiveContainer>
           </div>
@@ -240,14 +233,7 @@ export const VeterinarianAnalytics = ({ data, userProfile, dateRange }: Veterina
                   fill="hsl(var(--secondary))" 
                   name="Diagnostic Costs"
                 />
-                <Line 
-                  yAxisId="right"
-                  type="monotone" 
-                  dataKey="roi" 
-                  stroke="hsl(var(--accent))" 
-                  strokeWidth={3}
-                  name="ROI %"
-                />
+                {/* Line cannot be used in BarChart */}
               </BarChart>
             </ResponsiveContainer>
           </div>
