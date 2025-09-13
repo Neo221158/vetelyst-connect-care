@@ -10,6 +10,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { DocumentViewer } from "./DocumentViewer";
 import { ResponseEditor } from "./ResponseEditor";
 import { CaseTimeline } from "./CaseTimeline";
+import { ReportGenerator } from "@/components/reports/ReportGenerator";
 import { 
   ChevronDown, 
   ChevronUp, 
@@ -220,16 +221,17 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
         </CardHeader>
       </Card>
 
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Main Content */}
-        <div className="lg:col-span-2 space-y-6">
-          <Tabs value={activeTab} onValueChange={setActiveTab}>
-            <TabsList className="grid w-full grid-cols-4">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="clinical">Clinical</TabsTrigger>
-              <TabsTrigger value="documents">Documents</TabsTrigger>
-              <TabsTrigger value="response">Response</TabsTrigger>
-            </TabsList>
+        <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-5">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="clinical">Clinical</TabsTrigger>
+                <TabsTrigger value="documents">Documents</TabsTrigger>
+                <TabsTrigger value="response">Response</TabsTrigger>
+                <TabsTrigger value="report">Report</TabsTrigger>
+              </TabsList>
 
             <TabsContent value="overview" className="space-y-4">
               <Card>
@@ -414,6 +416,27 @@ export const CaseDetail = ({ caseId }: CaseDetailProps) => {
                   </CardContent>
                 </Card>
               )}
+            </TabsContent>
+
+            <TabsContent value="report">
+              <ReportGenerator 
+                caseId={caseId} 
+                caseData={caseData}
+                onReportGenerated={() => {
+                  fetchCaseData();
+                  fetchTimeline();
+                }} 
+              />
+            </TabsContent>
+          </Tabs>
+              <ReportGenerator 
+                caseId={caseId} 
+                caseData={caseData}
+                onReportGenerated={() => {
+                  fetchCaseData();
+                  fetchTimeline();
+                }} 
+              />
             </TabsContent>
           </Tabs>
         </div>

@@ -68,6 +68,108 @@ export type Database = {
           },
         ]
       }
+      case_reports: {
+        Row: {
+          case_id: string
+          clinical_summary: string | null
+          created_at: string
+          diagnosis_details: Json | null
+          digital_signature: Json | null
+          disclaimer_text: string | null
+          email_recipients: string[] | null
+          email_sent_at: string | null
+          email_status: string | null
+          file_size: number | null
+          follow_up_instructions: string | null
+          generated_at: string | null
+          id: string
+          pdf_file_path: string | null
+          prognosis_assessment: string | null
+          report_number: string
+          report_status: Database["public"]["Enums"]["report_status"]
+          report_type: Database["public"]["Enums"]["report_type"]
+          security_settings: Json | null
+          sent_at: string | null
+          specialist_id: string
+          template_used: string | null
+          title: string
+          treatment_recommendations: string | null
+          updated_at: string
+          watermark_applied: boolean | null
+        }
+        Insert: {
+          case_id: string
+          clinical_summary?: string | null
+          created_at?: string
+          diagnosis_details?: Json | null
+          digital_signature?: Json | null
+          disclaimer_text?: string | null
+          email_recipients?: string[] | null
+          email_sent_at?: string | null
+          email_status?: string | null
+          file_size?: number | null
+          follow_up_instructions?: string | null
+          generated_at?: string | null
+          id?: string
+          pdf_file_path?: string | null
+          prognosis_assessment?: string | null
+          report_number: string
+          report_status?: Database["public"]["Enums"]["report_status"]
+          report_type?: Database["public"]["Enums"]["report_type"]
+          security_settings?: Json | null
+          sent_at?: string | null
+          specialist_id: string
+          template_used?: string | null
+          title: string
+          treatment_recommendations?: string | null
+          updated_at?: string
+          watermark_applied?: boolean | null
+        }
+        Update: {
+          case_id?: string
+          clinical_summary?: string | null
+          created_at?: string
+          diagnosis_details?: Json | null
+          digital_signature?: Json | null
+          disclaimer_text?: string | null
+          email_recipients?: string[] | null
+          email_sent_at?: string | null
+          email_status?: string | null
+          file_size?: number | null
+          follow_up_instructions?: string | null
+          generated_at?: string | null
+          id?: string
+          pdf_file_path?: string | null
+          prognosis_assessment?: string | null
+          report_number?: string
+          report_status?: Database["public"]["Enums"]["report_status"]
+          report_type?: Database["public"]["Enums"]["report_type"]
+          security_settings?: Json | null
+          sent_at?: string | null
+          specialist_id?: string
+          template_used?: string | null
+          title?: string
+          treatment_recommendations?: string | null
+          updated_at?: string
+          watermark_applied?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "case_reports_case_id_fkey"
+            columns: ["case_id"]
+            isOneToOne: false
+            referencedRelation: "cases"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "case_reports_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       case_responses: {
         Row: {
           case_id: string
@@ -359,12 +461,110 @@ export type Database = {
         }
         Relationships: []
       }
+      specialist_letterheads: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          board_certifications: string[] | null
+          city: string | null
+          color_scheme: Json | null
+          country: string | null
+          created_at: string
+          credentials: string[] | null
+          email: string | null
+          fax: string | null
+          font_preferences: Json | null
+          footer_template: string | null
+          header_template: string | null
+          id: string
+          is_active: boolean | null
+          is_default: boolean | null
+          license_numbers: string[] | null
+          phone: string | null
+          postal_code: string | null
+          practice_logo_url: string | null
+          practice_name: string
+          specialist_id: string
+          specialties: string[] | null
+          state: string | null
+          updated_at: string
+          website: string | null
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          board_certifications?: string[] | null
+          city?: string | null
+          color_scheme?: Json | null
+          country?: string | null
+          created_at?: string
+          credentials?: string[] | null
+          email?: string | null
+          fax?: string | null
+          font_preferences?: Json | null
+          footer_template?: string | null
+          header_template?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          license_numbers?: string[] | null
+          phone?: string | null
+          postal_code?: string | null
+          practice_logo_url?: string | null
+          practice_name: string
+          specialist_id: string
+          specialties?: string[] | null
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          board_certifications?: string[] | null
+          city?: string | null
+          color_scheme?: Json | null
+          country?: string | null
+          created_at?: string
+          credentials?: string[] | null
+          email?: string | null
+          fax?: string | null
+          font_preferences?: Json | null
+          footer_template?: string | null
+          header_template?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_default?: boolean | null
+          license_numbers?: string[] | null
+          phone?: string | null
+          postal_code?: string | null
+          practice_logo_url?: string | null
+          practice_name?: string
+          specialist_id?: string
+          specialties?: string[] | null
+          state?: string | null
+          updated_at?: string
+          website?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "specialist_letterheads_specialist_id_fkey"
+            columns: ["specialist_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      generate_report_number: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
     }
     Enums: {
       animal_species: "dog" | "cat" | "horse" | "bird" | "rabbit" | "other"
@@ -376,6 +576,12 @@ export type Database = {
         | "follow_up_needed"
         | "declined"
       case_urgency: "routine" | "urgent" | "emergency"
+      report_status: "draft" | "generated" | "sent" | "archived"
+      report_type:
+        | "consultation"
+        | "second_opinion"
+        | "emergency_response"
+        | "follow_up"
       specialty_area:
         | "anesthesia"
         | "cardiology"
@@ -525,6 +731,13 @@ export const Constants = {
         "declined",
       ],
       case_urgency: ["routine", "urgent", "emergency"],
+      report_status: ["draft", "generated", "sent", "archived"],
+      report_type: [
+        "consultation",
+        "second_opinion",
+        "emergency_response",
+        "follow_up",
+      ],
       specialty_area: [
         "anesthesia",
         "cardiology",
