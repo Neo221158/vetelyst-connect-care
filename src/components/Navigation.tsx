@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Stethoscope, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navigation = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -35,6 +36,11 @@ const Navigation = () => {
             <Button variant="ghost">
               Sign In
             </Button>
+            <Link to="/dashboard">
+              <Button variant="medical">
+                View Dashboard
+              </Button>
+            </Link>
             <Button variant="default">
               Get Started
             </Button>
@@ -66,6 +72,11 @@ const Navigation = () => {
                 <Button variant="ghost" className="justify-start">
                   Sign In
                 </Button>
+                <Link to="/dashboard">
+                  <Button variant="medical" className="justify-start w-full">
+                    View Dashboard
+                  </Button>
+                </Link>
                 <Button variant="default" className="justify-start">
                   Get Started
                 </Button>
