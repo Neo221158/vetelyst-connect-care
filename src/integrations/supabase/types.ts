@@ -283,6 +283,7 @@ export type Database = {
           accepted_at: string | null
           age_months: number | null
           age_years: number | null
+          anesthesia_history: Json | null
           body_condition_score: number | null
           breed: string | null
           chief_complaint: string
@@ -296,6 +297,7 @@ export type Database = {
           gender: string | null
           id: string
           medical_history: Json | null
+          other_species_type: string | null
           patient_name: string
           physical_examination: string | null
           presenting_complaint: string
@@ -303,6 +305,7 @@ export type Database = {
           questions_for_specialist: string | null
           referring_vet_id: string
           severity_score: number | null
+          spay_neuter_status: Database["public"]["Enums"]["spay_neuter_status"] | null
           specialist_id: string | null
           specialty_requested: Database["public"]["Enums"]["specialty_area"]
           species: Database["public"]["Enums"]["animal_species"]
@@ -319,6 +322,7 @@ export type Database = {
           accepted_at?: string | null
           age_months?: number | null
           age_years?: number | null
+          anesthesia_history?: Json | null
           body_condition_score?: number | null
           breed?: string | null
           chief_complaint: string
@@ -332,6 +336,7 @@ export type Database = {
           gender?: string | null
           id?: string
           medical_history?: Json | null
+          other_species_type?: string | null
           patient_name: string
           physical_examination?: string | null
           presenting_complaint: string
@@ -339,6 +344,7 @@ export type Database = {
           questions_for_specialist?: string | null
           referring_vet_id: string
           severity_score?: number | null
+          spay_neuter_status?: Database["public"]["Enums"]["spay_neuter_status"] | null
           specialist_id?: string | null
           specialty_requested: Database["public"]["Enums"]["specialty_area"]
           species: Database["public"]["Enums"]["animal_species"]
@@ -355,6 +361,7 @@ export type Database = {
           accepted_at?: string | null
           age_months?: number | null
           age_years?: number | null
+          anesthesia_history?: Json | null
           body_condition_score?: number | null
           breed?: string | null
           chief_complaint?: string
@@ -368,6 +375,7 @@ export type Database = {
           gender?: string | null
           id?: string
           medical_history?: Json | null
+          other_species_type?: string | null
           patient_name?: string
           physical_examination?: string | null
           presenting_complaint?: string
@@ -375,6 +383,7 @@ export type Database = {
           questions_for_specialist?: string | null
           referring_vet_id?: string
           severity_score?: number | null
+          spay_neuter_status?: Database["public"]["Enums"]["spay_neuter_status"] | null
           specialist_id?: string | null
           specialty_requested?: Database["public"]["Enums"]["specialty_area"]
           species?: Database["public"]["Enums"]["animal_species"]
@@ -593,6 +602,7 @@ export type Database = {
         | "ophthalmology"
         | "orthopedics"
         | "surgery"
+      spay_neuter_status: "spayed" | "neutered" | "intact"
       user_role: "referring_vet" | "specialist"
     }
     CompositeTypes: {

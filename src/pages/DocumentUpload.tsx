@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { FileUpload } from "@/components/FileUpload";
 import {
   Stethoscope,
   Upload,
@@ -24,6 +25,9 @@ import {
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate, Navigate } from "react-router-dom";
+import { FileUploadResult } from "@/lib/fileUpload";
+import { submitCase, CaseSubmissionData, createTimelineEntry } from "@/lib/caseSubmission";
+import { useToast } from "@/hooks/use-toast";
 
 type Species = "dog" | "cat" | "other";
 type SpayNeuterStatus = "spayed" | "neutered" | "intact";
@@ -141,6 +145,15 @@ export default function DocumentUpload() {
   // Medications state
   const [medications, setMedications] = useState<Medication[]>([{ drugName: "", dose: "", unit: "mg/kg" }]);
 
+  // File upload state
+  const [bloodTestFiles, setBloodTestFiles] = useState<FileUploadResult[]>([]);
+  const [medicalRecordFiles, setMedicalRecordFiles] = useState<FileUploadResult[]>([]);
+
+  // Submission state
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [patientName, setPatientName] = useState("");
+  const { toast } = useToast();
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate('/');
@@ -197,6 +210,94 @@ export default function DocumentUpload() {
     return breedList.filter(breed =>
       breed.toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(0, 10);
+  };
+
+  const handleSubmitCase = async () => {
+    setIsSubmitting(true);
+
+    try {
+      // Prepare submission data
+      const submissionData: CaseSubmissionData = {
+        signalment: {
+          species: selectedSpecies!,
+          otherSpeciesType,
+          breed,
+          ageYears: age!,
+          ageMonths: age === 0 ? parseInt(ageInMonths) : undefined,
+          weight: parseFloat(weight),
+          spayNeuterStatus: spayNeuterStatus!,
+          patientName
+        },
+        chiefComplaint: ccSurgeryType,
+        anesthesiaHistory: {
+          hadAnesthesia,
+          hadProblems,
+          problemsNotes
+        },
+        medicalExamination: {
+          tpr,
+          cardiovascular,
+          auscultation,
+          respiratory,
+          gastrointestinal,
+          urogenital,
+          renal,
+          hepatic,
+          musculoskeletal,
+          neurological,
+          dermatological,
+          ophthalmic,
+          oralDental,
+          lymphatic,
+          endocrine,
+          otherSystem
+        },
+        medications,
+        bloodTestFiles,
+        medicalRecordFiles
+      };
+
+      // Submit the case
+      const result = await submitCase(submissionData);
+
+      if (result.success && result.caseId) {
+        // Create timeline entry
+        await createTimelineEntry(
+          result.caseId,
+          'case_submitted',
+          'Case submitted for specialist review',
+          {
+            filesUploaded: {
+              bloodTests: bloodTestFiles.length,
+              medicalRecords: medicalRecordFiles.length
+            }
+          }
+        );
+
+        toast({
+          title: "Case Submitted Successfully!",
+          description: `Your case has been submitted for review. Case ID: ${result.caseId}`,
+        });
+
+        // Navigate to a success page or dashboard
+        navigate('/dashboard');
+      } else {
+        toast({
+          title: "Submission Failed",
+          description: result.error || "An unexpected error occurred",
+          variant: "destructive"
+        });
+      }
+    } catch (error) {
+      console.error('Submission error:', error);
+      toast({
+        title: "Submission Failed",
+        description: "An unexpected error occurred. Please try again.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const renderSystemExam = (
@@ -464,6 +565,17 @@ export default function DocumentUpload() {
                 </div>
               </div>
 
+              {/* Patient Name */}
+              <div className="space-y-3">
+                <Label htmlFor="patient-name" className="text-base font-medium">Patient Name *</Label>
+                <Input
+                  id="patient-name"
+                  placeholder="Enter patient's name"
+                  value={patientName}
+                  onChange={(e) => setPatientName(e.target.value)}
+                />
+              </div>
+
               {/* CC/Surgery Type */}
               <div className="space-y-3">
                 <Label htmlFor="cc-surgery-type" className="text-base font-medium">
@@ -598,7 +710,7 @@ export default function DocumentUpload() {
                 {renderSystemExam(hepatic, setHepatic, "Hepatic System")}
                 {renderSystemExam(musculoskeletal, setMusculoskeletal, "Musculoskeletal System")}
                 {renderSystemExam(neurological, setNeurological, "Neurological System")}
-                {renderSystemExam(dermatological, setDermatological, "Dermatological/Integumentary System")}
+                {renderSystemExam(dermatological, setDermatological, "Dermatological System")}
                 {renderSystemExam(ophthalmic, setOphthalmic, "Ophthalmic (Eyes)")}
                 {renderSystemExam(oralDental, setOralDental, "Oral/Dental")}
                 {renderSystemExam(lymphatic, setLymphatic, "Lymphatic System")}
@@ -639,20 +751,12 @@ export default function DocumentUpload() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <Camera className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Upload Blood Test Images</h3>
-                <p className="text-muted-foreground mb-4">
-                  Drag and drop images here, or click to select files
-                </p>
-                <Button variant="outline">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Images
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Supports: JPEG, PNG, GIF, BMP, TIFF, HEIC, WEBP
-                </p>
-              </div>
+              <FileUpload
+                type="bloodTests"
+                userId={user.id}
+                onFilesUploaded={setBloodTestFiles}
+                maxFiles={5}
+              />
             </CardContent>
           </Card>
 
@@ -665,22 +769,12 @@ export default function DocumentUpload() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
-                <FileText className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium mb-2">Upload Medical Records</h3>
-                <p className="text-muted-foreground mb-4">
-                  Upload documents, images, or videos of medical records
-                </p>
-                <Button variant="outline">
-                  <Upload className="h-4 w-4 mr-2" />
-                  Choose Files
-                </Button>
-                <p className="text-xs text-muted-foreground mt-2">
-                  Documents: PDF, DOC, DOCX, TXT, RTF, ODT<br/>
-                  Images: JPEG, PNG, GIF, BMP, TIFF, HEIC, WEBP<br/>
-                  Videos: MP4, MOV, AVI, WMV, MKV, WEBM (optional)
-                </p>
-              </div>
+              <FileUpload
+                type="medicalRecords"
+                userId={user.id}
+                onFilesUploaded={setMedicalRecordFiles}
+                maxFiles={10}
+              />
             </CardContent>
           </Card>
 
@@ -771,15 +865,19 @@ export default function DocumentUpload() {
               <Button
                 className="bg-gradient-primary hover:opacity-90"
                 disabled={
+                  isSubmitting ||
                   !selectedSpecies ||
+                  !patientName.trim() ||
                   !ccSurgeryType.trim() ||
                   age === null ||
                   !weight.trim() ||
+                  !spayNeuterStatus ||
                   (selectedSpecies === "other" && !otherSpeciesType.trim()) ||
                   (age === 0 && !ageInMonths)
                 }
+                onClick={handleSubmitCase}
               >
-                Submit for Review
+                {isSubmitting ? "Submitting..." : "Submit for Review"}
               </Button>
             </div>
           </div>
