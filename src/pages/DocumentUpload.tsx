@@ -269,12 +269,15 @@ export default function DocumentUpload() {
           }
         );
 
+        console.log('Case submission successful, case ID:', result.caseId);
+
         toast({
           title: "Case Submitted Successfully!",
           description: `Your case has been submitted for review. Case ID: ${result.caseId}`,
         });
 
         // Navigate to anesthesia equipment page with case ID
+        console.log('Navigating to anesthesia equipment with case ID:', result.caseId);
         navigate('/anesthesia-equipment', { state: { caseId: result.caseId } });
       } else {
         toast({

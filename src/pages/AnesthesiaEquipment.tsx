@@ -38,6 +38,10 @@ export default function AnesthesiaEquipment() {
   // Get case ID from navigation state
   const caseId = location.state?.caseId;
 
+  console.log('AnesthesiaEquipment page loaded');
+  console.log('Location state:', location.state);
+  console.log('Case ID received:', caseId);
+
   // Sedation/Premedication Drugs
   const [sedationDrugs, setSedationDrugs] = useState<EquipmentSection>({
     "Acepromazine (ACP)": { selected: false },
