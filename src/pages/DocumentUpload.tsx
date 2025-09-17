@@ -861,6 +861,67 @@ export default function DocumentUpload() {
                 Save Draft
               </Button>
               <Button
+                variant="outline"
+                disabled={
+                  !selectedSpecies ||
+                  !patientName.trim() ||
+                  !ccSurgeryType.trim() ||
+                  age === null ||
+                  !weight.trim() ||
+                  !spayNeuterStatus ||
+                  (selectedSpecies === "other" && !otherSpeciesType.trim()) ||
+                  (age === 0 && !ageInMonths)
+                }
+                onClick={() => {
+                  // Navigate to equipment page without submitting case yet
+                  navigate('/anesthesia-equipment', {
+                    state: {
+                      caseData: {
+                        signalment: {
+                          species: selectedSpecies!,
+                          otherSpeciesType,
+                          breed,
+                          ageYears: age!,
+                          ageMonths: age === 0 ? parseInt(ageInMonths) : undefined,
+                          weight: parseFloat(weight),
+                          spayNeuterStatus: spayNeuterStatus!,
+                          patientName
+                        },
+                        chiefComplaint: ccSurgeryType,
+                        anesthesiaHistory: {
+                          hadAnesthesia,
+                          hadProblems,
+                          problemsNotes
+                        },
+                        medicalExamination: {
+                          tpr,
+                          cardiovascular,
+                          auscultation,
+                          respiratory,
+                          gastrointestinal,
+                          urogenital,
+                          renal,
+                          hepatic,
+                          musculoskeletal,
+                          neurological,
+                          dermatological,
+                          ophthalmic,
+                          oralDental,
+                          lymphatic,
+                          endocrine,
+                          otherSystem
+                        },
+                        medications,
+                        bloodTestFiles,
+                        medicalRecordFiles
+                      }
+                    }
+                  });
+                }}
+              >
+                Next: Equipment & Drugs
+              </Button>
+              <Button
                 className="bg-gradient-primary hover:opacity-90"
                 disabled={
                   isSubmitting ||
@@ -875,7 +936,7 @@ export default function DocumentUpload() {
                 }
                 onClick={handleSubmitCase}
               >
-                {isSubmitting ? "Submitting..." : "Submit for Review"}
+                {isSubmitting ? "Submitting..." : "Submit & Next"}
               </Button>
             </div>
           </div>

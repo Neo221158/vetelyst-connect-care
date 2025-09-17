@@ -53,12 +53,14 @@ export default function AnesthesiaEquipment() {
   const location = useLocation();
   const { toast } = useToast();
 
-  // Get case ID from navigation state
+  // Get case ID or case data from navigation state
   const caseId = location.state?.caseId;
+  const caseData = location.state?.caseData;
 
   console.log('AnesthesiaEquipment page loaded');
   console.log('Location state:', location.state);
   console.log('Case ID received:', caseId);
+  console.log('Case data received:', caseData);
 
   // Drug sections
   const [opioids, setOpioids] = useState<EquipmentSection>({
@@ -190,8 +192,8 @@ export default function AnesthesiaEquipment() {
     return <Navigate to="/auth" replace />;
   }
 
-  // Redirect if no case ID
-  if (!caseId) {
+  // Redirect if no case ID and no case data
+  if (!caseId && !caseData) {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -228,9 +230,40 @@ export default function AnesthesiaEquipment() {
     setIsSubmitting(true);
 
     try {
+      let finalCaseId = caseId;
+
+      // If we have case data but no case ID, submit the case first
+      if (caseData && !caseId) {
+        console.log('Submitting case data first...');
+        const { submitCase, createTimelineEntry } = await import('@/lib/caseSubmission');
+
+        const result = await submitCase(caseData);
+
+        if (result.success && result.caseId) {
+          finalCaseId = result.caseId;
+
+          // Create timeline entry
+          await createTimelineEntry(
+            result.caseId,
+            'case_submitted',
+            'Case submitted for specialist review',
+            {
+              filesUploaded: {
+                bloodTests: caseData.bloodTestFiles?.length || 0,
+                medicalRecords: caseData.medicalRecordFiles?.length || 0
+              }
+            }
+          );
+
+          console.log('Case submitted successfully, case ID:', result.caseId);
+        } else {
+          throw new Error(result.error || 'Failed to submit case');
+        }
+      }
+
       // Prepare equipment data
       const equipmentData = {
-        case_id: caseId,
+        case_id: finalCaseId,
         drugs: {
           opioids,
           nsaids,
@@ -251,7 +284,7 @@ export default function AnesthesiaEquipment() {
         created_at: new Date().toISOString()
       };
 
-      // Save to database
+      // Save equipment data to database
       const { error } = await supabase
         .from('anesthesia_equipment')
         .insert(equipmentData);
@@ -261,18 +294,18 @@ export default function AnesthesiaEquipment() {
       }
 
       toast({
-        title: "Equipment Information Saved!",
-        description: "Your anesthesia equipment information has been recorded successfully.",
+        title: "Case Submitted Successfully!",
+        description: `Your case and equipment information has been submitted for review. Case ID: ${finalCaseId}`,
       });
 
-      // Navigate to next page or back to dashboard
+      // Navigate back to dashboard
       navigate('/dashboard');
 
     } catch (error) {
-      console.error('Error saving equipment data:', error);
+      console.error('Error saving data:', error);
       toast({
         title: "Submission Failed",
-        description: "Failed to save equipment information. Please try again.",
+        description: "Failed to save information. Please try again.",
         variant: "destructive"
       });
     } finally {
@@ -546,7 +579,7 @@ export default function AnesthesiaEquipment() {
               Please indicate which equipment and drugs you have available in your clinic
             </p>
             <p className="text-sm text-gray-500 mt-1">
-              Case ID: {caseId}
+              {caseId ? `Case ID: ${caseId}` : 'New Case - Equipment Selection'}
             </p>
           </div>
 
