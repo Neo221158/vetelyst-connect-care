@@ -111,6 +111,16 @@ export default function DocumentUpload() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
+  // Show loading while checking authentication
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  // Redirect if not authenticated
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
+
   // Signalment state
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
   const [otherSpeciesType, setOtherSpeciesType] = useState("");
@@ -751,6 +761,7 @@ export default function DocumentUpload() {
               </CardTitle>
             </CardHeader>
             <CardContent>
+              {console.log('User ID for file upload:', user.id)}
               <FileUpload
                 type="bloodTests"
                 userId={user.id}

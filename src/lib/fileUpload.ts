@@ -112,8 +112,17 @@ export async function uploadFile(
   caseId?: string
 ): Promise<FileUploadResult> {
   try {
+    // Validate inputs
+    if (!userId || !file.name || !bucket) {
+      return {
+        success: false,
+        error: `Invalid parameters: userId=${userId}, fileName=${file.name}, bucket=${bucket}`
+      };
+    }
+
     // Generate unique file path
     const filePath = generateFilePath(userId, file.name, caseId);
+    console.log('Generated file path:', filePath);
 
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage
