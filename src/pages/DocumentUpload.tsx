@@ -40,6 +40,16 @@ interface Medication {
   unit: DoseUnit;
 }
 
+// Comprehensive dog breeds list
+const dogBreeds = [
+  "Mixed Breed", "Affenpinscher", "Afghan Hound", "Airedale Terrier", "Akbash", "Akita", "Alaskan Malamute", "American Bulldog", "American Bully", "American Eskimo", "American Foxhound", "American Pit Bull Terrier", "American Staffordshire Terrier", "Anatolian Shepherd", "Australian Cattle Dog", "Australian Shepherd", "Australian Terrier", "Basenji", "Basset Hound", "Beagle", "Bearded Collie", "Beauceron", "Bedlington Terrier", "Belgian Malinois", "Belgian Sheepdog", "Belgian Tervuren", "Bernese Mountain Dog", "Bichon Frise", "Black and Tan Coonhound", "Bloodhound", "Blue Heeler", "Boerboel", "Border Collie", "Border Terrier", "Borzoi", "Boston Terrier", "Bouvier des Flandres", "Boxer", "Boykin Spaniel", "Briard", "Brittany", "Brussels Griffon", "Bull Terrier", "Bulldog", "Bullmastiff", "Cairn Terrier", "Cane Corso", "Cardigan Welsh Corgi", "Cavalier King Charles Spaniel", "Chesapeake Bay Retriever", "Chihuahua", "Chinese Crested", "Chinese Shar Pei", "Chow Chow", "Clumber Spaniel", "Cocker Spaniel", "Collie", "Coonhound", "Corgi", "Coton de Tulear", "Dachshund", "Dalmatian", "Dandie Dinmont Terrier", "Doberman Pinscher", "Dogue de Bordeaux", "English Bulldog", "English Cocker Spaniel", "English Foxhound", "English Setter", "English Springer Spaniel", "English Toy Spaniel", "Field Spaniel", "Finnish Spitz", "Flat-Coated Retriever", "Fox Terrier", "French Bulldog", "German Pinscher", "German Shepherd", "German Shorthaired Pointer", "German Wirehaired Pointer", "Giant Schnauzer", "Glen of Imaal Terrier", "Golden Retriever", "Gordon Setter", "Great Dane", "Great Pyrenees", "Greater Swiss Mountain Dog", "Greyhound", "Harrier", "Havanese", "Irish Red and White Setter", "Irish Setter", "Irish Terrier", "Irish Water Spaniel", "Irish Wolfhound", "Italian Greyhound", "Jack Russell Terrier", "Japanese Chin", "Keeshond", "Kerry Blue Terrier", "Komondor", "Kuvasz", "Labrador Retriever", "Lakeland Terrier", "Leonberger", "Lhasa Apso", "Lowchen", "Maltese", "Manchester Terrier", "Mastiff", "Miniature Bull Terrier", "Miniature Pinscher", "Miniature Schnauzer", "Neapolitan Mastiff", "Newfoundland", "Norfolk Terrier", "Norwegian Buhund", "Norwegian Elkhound", "Norwich Terrier", "Nova Scotia Duck Tolling Retriever", "Old English Sheepdog", "Otterhound", "Papillon", "Parson Russell Terrier", "Pekingese", "Pembroke Welsh Corgi", "Petit Basset Griffon Vendeen", "Pharaoh Hound", "Pit Bull", "Pointer", "Polish Lowland Sheepdog", "Pomeranian", "Poodle", "Portuguese Water Dog", "Pug", "Puli", "Pyrenean Shepherd", "Redbone Coonhound", "Rhodesian Ridgeback", "Rottweiler", "Saint Bernard", "Saluki", "Samoyed", "Schipperke", "Scottish Deerhound", "Scottish Terrier", "Sealyham Terrier", "Shetland Sheepdog", "Shiba Inu", "Shih Tzu", "Siberian Husky", "Silky Terrier", "Skye Terrier", "Smooth Fox Terrier", "Soft Coated Wheaten Terrier", "Spaniel", "Spinone Italiano", "Staffordshire Bull Terrier", "Standard Schnauzer", "Sussex Spaniel", "Tibetan Mastiff", "Tibetan Spaniel", "Tibetan Terrier", "Toy Fox Terrier", "Treeing Walker Coonhound", "Vizsla", "Weimaraner", "Welsh Springer Spaniel", "Welsh Terrier", "West Highland White Terrier", "Whippet", "Wire Fox Terrier", "Wirehaired Pointing Griffon", "Yorkshire Terrier"
+];
+
+// Comprehensive cat breeds list
+const catBreeds = [
+  "Mixed Breed", "DSH (Domestic Shorthair)", "DLH (Domestic Longhair)", "Abyssinian", "Aegean", "American Bobtail", "American Curl", "American Shorthair", "American Wirehair", "Aphrodite Giant", "Arabian Mau", "Asian", "Asian Semi-longhair", "Australian Mist", "Balinese", "Bambino", "Bengal", "Birman", "Bombay", "Brazilian Shorthair", "British Longhair", "British Shorthair", "Burmese", "Burmilla", "California Spangled", "Chantilly-Tiffany", "Chartreux", "Chausie", "Colorpoint Shorthair", "Cornish Rex", "Cymric", "Cyprus", "Devon Rex", "Donskoy", "Dragon Li", "Dwelf", "Egyptian Mau", "European Shorthair", "Exotic Shorthair", "Foldex", "German Rex", "Havana Brown", "Highlander", "Himalayan", "Japanese Bobtail", "Javanese", "Kanaani", "Karelian Bobtail", "Khao Manee", "Kinkalow", "Korat", "Korean Bobtail", "Korn Ja", "Kurilian Bobtail", "Lambkin", "LaPerm", "Lykoi", "Maine Coon", "Manx", "Mekong Bobtail", "Minskin", "Minuet", "Munchkin", "Nebelung", "Neva Masquerade", "Norwegian Forest Cat", "Ocicat", "Ojos Azules", "Oriental Bicolor", "Oriental Longhair", "Oriental Shorthair", "Persian", "Peterbald", "Pixie-bob", "Ragamuffin", "Ragdoll", "Russian Blue", "Russian White", "Savannah", "Scottish Fold", "Selkirk Rex", "Serengeti", "Siamese", "Siberian", "Singapura", "Snowshoe", "Sokoke", "Somali", "Sphynx", "Thai", "Tonkinese", "Toyger", "Turkish Angora", "Turkish Van", "Ukrainian Levkoy", "York Chocolate"
+];
+
 // Comprehensive veterinary drug list
 const veterinaryDrugs = [
   // Antibiotics
@@ -99,7 +109,11 @@ export default function DocumentUpload() {
 
   // Signalment state
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
-  const [age, setAge] = useState<string>("");
+  const [otherSpeciesType, setOtherSpeciesType] = useState("");
+  const [breed, setBreed] = useState("");
+  const [age, setAge] = useState<number | null>(null);
+  const [ageInMonths, setAgeInMonths] = useState<string>("");
+  const [weight, setWeight] = useState("");
   const [spayNeuterStatus, setSpayNeuterStatus] = useState<SpayNeuterStatus | null>(null);
   const [ccSurgeryType, setCcSurgeryType] = useState("");
   const [hadAnesthesia, setHadAnesthesia] = useState<boolean | null>(null);
@@ -174,6 +188,14 @@ export default function DocumentUpload() {
     if (!searchTerm) return [];
     return veterinaryDrugs.filter(drug =>
       drug.toLowerCase().includes(searchTerm.toLowerCase())
+    ).slice(0, 10);
+  };
+
+  const filteredBreeds = (searchTerm: string) => {
+    if (!searchTerm || !selectedSpecies) return [];
+    const breedList = selectedSpecies === "dog" ? dogBreeds : selectedSpecies === "cat" ? catBreeds : [];
+    return breedList.filter(breed =>
+      breed.toLowerCase().includes(searchTerm.toLowerCase())
     ).slice(0, 10);
   };
 
@@ -302,30 +324,122 @@ export default function DocumentUpload() {
                           ? "ring-2 ring-primary ring-offset-2"
                           : "hover:border-primary/50"
                       }`}
-                      onClick={() => setSelectedSpecies(species.value)}
+                      onClick={() => {
+                        setSelectedSpecies(species.value);
+                        setBreed(""); // Reset breed when species changes
+                        setOtherSpeciesType(""); // Reset other species type
+                      }}
                     >
                       <span className="text-2xl">{species.icon}</span>
                       <span className="font-medium">{species.label}</span>
                     </Button>
                   ))}
                 </div>
+
+                {/* Other Species Type Input */}
+                {selectedSpecies === "other" && (
+                  <div className="mt-3">
+                    <Label htmlFor="other-species">Please specify species type:</Label>
+                    <Input
+                      id="other-species"
+                      placeholder="e.g., Rabbit, Guinea Pig, Bird, etc."
+                      value={otherSpeciesType}
+                      onChange={(e) => setOtherSpeciesType(e.target.value)}
+                      className="mt-2"
+                    />
+                  </div>
+                )}
               </div>
+
+              {/* Breed Selection */}
+              {(selectedSpecies === "dog" || selectedSpecies === "cat") && (
+                <div className="space-y-3">
+                  <Label className="text-base font-medium">Breed</Label>
+                  <div className="relative">
+                    <Input
+                      placeholder={`Start typing ${selectedSpecies} breed...`}
+                      value={breed}
+                      onChange={(e) => setBreed(e.target.value)}
+                    />
+                    {breed && (
+                      <div className="absolute z-10 w-full mt-1 max-h-32 overflow-y-auto border rounded-md bg-background shadow-lg">
+                        {filteredBreeds(breed).map((breedOption, index) => (
+                          <div
+                            key={index}
+                            className="px-3 py-2 hover:bg-muted cursor-pointer text-sm"
+                            onClick={() => setBreed(breedOption)}
+                          >
+                            {breedOption}
+                          </div>
+                        ))}
+                        {filteredBreeds(breed).length === 0 && (
+                          <div className="px-3 py-2 text-sm text-muted-foreground">
+                            No breeds found
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
 
               {/* Age */}
               <div className="space-y-3">
-                <Label className="text-base font-medium">Age *</Label>
-                <Select value={age} onValueChange={setAge}>
-                  <SelectTrigger className="max-w-xs">
-                    <SelectValue placeholder="Select age" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 26 }, (_, i) => (
-                      <SelectItem key={i} value={i.toString()}>
-                        {i} {i === 1 ? "year" : "years"}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label className="text-base font-medium">Age (Years) *</Label>
+                <div className="grid grid-cols-6 sm:grid-cols-13 gap-2">
+                  {Array.from({ length: 26 }, (_, i) => (
+                    <Button
+                      key={i}
+                      type="button"
+                      variant={age === i ? "default" : "outline"}
+                      size="sm"
+                      className={`h-10 text-sm ${
+                        age === i
+                          ? "ring-2 ring-primary ring-offset-1"
+                          : "hover:border-primary/50"
+                      }`}
+                      onClick={() => {
+                        setAge(i);
+                        if (i !== 0) setAgeInMonths(""); // Reset months if not 0
+                      }}
+                    >
+                      {i}
+                    </Button>
+                  ))}
+                </div>
+
+                {/* Months dropdown when age is 0 */}
+                {age === 0 && (
+                  <div className="mt-3">
+                    <Label className="text-base font-medium">Age in Months *</Label>
+                    <Select value={ageInMonths} onValueChange={setAgeInMonths}>
+                      <SelectTrigger className="max-w-xs">
+                        <SelectValue placeholder="Select months" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {Array.from({ length: 12 }, (_, i) => (
+                          <SelectItem key={i + 1} value={(i + 1).toString()}>
+                            {i + 1} {i + 1 === 1 ? "month" : "months"}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+
+              {/* Weight */}
+              <div className="space-y-3">
+                <Label htmlFor="weight" className="text-base font-medium">Weight (kg) *</Label>
+                <Input
+                  id="weight"
+                  type="number"
+                  step="0.1"
+                  placeholder="Enter weight in kilograms"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                  className="max-w-xs"
+                />
               </div>
 
               {/* Spay/Neuter Status */}
@@ -656,7 +770,14 @@ export default function DocumentUpload() {
               </Button>
               <Button
                 className="bg-gradient-primary hover:opacity-90"
-                disabled={!selectedSpecies || !ccSurgeryType.trim() || !age}
+                disabled={
+                  !selectedSpecies ||
+                  !ccSurgeryType.trim() ||
+                  age === null ||
+                  !weight.trim() ||
+                  (selectedSpecies === "other" && !otherSpeciesType.trim()) ||
+                  (age === 0 && !ageInMonths)
+                }
               >
                 Submit for Review
               </Button>
