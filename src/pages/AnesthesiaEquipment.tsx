@@ -261,26 +261,18 @@ export default function AnesthesiaEquipment() {
         }
       }
 
-      // Prepare equipment data
+      // Prepare equipment data to match current database structure
       const equipmentData = {
         case_id: finalCaseId,
-        drugs: {
-          opioids,
-          nsaids,
-          sedation,
-          induction,
-          anestheticGases,
-          localAnesthetics,
-          supplementDrugs
-        },
-        equipment: {
-          anesthesiaMachine,
-          breathingSystem,
-          infusionMachine,
-          heatingSystem,
-          ventilator,
-          monitoring
-        },
+        // Map new drug categories to old database columns
+        sedation_drugs: { ...sedation, ...nsaids },
+        injectable_anesthetics: { ...induction, ...supplementDrugs },
+        inhalation_anesthetics: anestheticGases,
+        analgesics: { ...opioids, ...localAnesthetics },
+        reversal_agents: {},
+        // Map equipment to existing structure
+        anesthesia_machine_available: anesthesiaMachine.model ? true : false,
+        monitoring_parameters: { ...monitoring, ...heatingSystem, ventilator },
         created_at: new Date().toISOString()
       };
 

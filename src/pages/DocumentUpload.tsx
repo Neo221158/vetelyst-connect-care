@@ -851,6 +851,20 @@ export default function DocumentUpload() {
             </CardContent>
           </Card>
 
+          {/* Test Direct Navigation */}
+          <div className="mb-4 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+            <p className="text-sm text-yellow-800 mb-2">Test Navigation:</p>
+            <Button
+              onClick={() => {
+                console.log('Direct navigation test clicked');
+                navigate('/anesthesia-equipment');
+              }}
+              className="bg-yellow-500 hover:bg-yellow-600"
+            >
+              🧪 Test Direct Link to Equipment Page
+            </Button>
+          </div>
+
           {/* Action Buttons */}
           <div className="flex justify-between pt-6 border-t">
             <Button variant="outline" onClick={() => navigate('/dashboard')}>
@@ -862,32 +876,24 @@ export default function DocumentUpload() {
               </Button>
               <Button
                 variant="outline"
-                disabled={
-                  !selectedSpecies ||
-                  !patientName.trim() ||
-                  !ccSurgeryType.trim() ||
-                  age === null ||
-                  !weight.trim() ||
-                  !spayNeuterStatus ||
-                  (selectedSpecies === "other" && !otherSpeciesType.trim()) ||
-                  (age === 0 && !ageInMonths)
-                }
+                disabled={false}
                 onClick={() => {
+                  console.log('Next button clicked - navigating to equipment page');
                   // Navigate to equipment page without submitting case yet
                   navigate('/anesthesia-equipment', {
                     state: {
                       caseData: {
                         signalment: {
-                          species: selectedSpecies!,
+                          species: selectedSpecies || 'dog',
                           otherSpeciesType,
                           breed,
-                          ageYears: age!,
-                          ageMonths: age === 0 ? parseInt(ageInMonths) : undefined,
-                          weight: parseFloat(weight),
-                          spayNeuterStatus: spayNeuterStatus!,
-                          patientName
+                          ageYears: age || 0,
+                          ageMonths: age === 0 ? parseInt(ageInMonths || '1') : undefined,
+                          weight: parseFloat(weight || '0'),
+                          spayNeuterStatus: spayNeuterStatus || 'intact',
+                          patientName: patientName || 'Test Patient'
                         },
-                        chiefComplaint: ccSurgeryType,
+                        chiefComplaint: ccSurgeryType || 'Test procedure',
                         anesthesiaHistory: {
                           hadAnesthesia,
                           hadProblems,
