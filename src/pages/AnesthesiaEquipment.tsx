@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Textarea } from "@/components/ui/textarea";
 import { useNavigate, Navigate, useLocation } from "react-router-dom";
 import {
   Stethoscope,
@@ -17,16 +18,33 @@ import {
   Monitor,
   Wind,
   RotateCcw,
-  Cog
+  Cog,
+  Upload,
+  Camera
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { FileUpload } from "@/components/FileUpload";
+
+interface EquipmentItem {
+  available: boolean;
+  comments: string;
+}
 
 interface EquipmentSection {
-  [key: string]: {
-    selected: boolean;
-    otherText?: string;
-  };
+  [key: string]: EquipmentItem;
+}
+
+interface MachineInfo {
+  model: string;
+  image?: File;
+  imagePreview?: string;
+}
+
+interface SystemInfo {
+  description: string;
+  image?: File;
+  imagePreview?: string;
 }
 
 export default function AnesthesiaEquipment() {
@@ -42,77 +60,122 @@ export default function AnesthesiaEquipment() {
   console.log('Location state:', location.state);
   console.log('Case ID received:', caseId);
 
-  // Sedation/Premedication Drugs
-  const [sedationDrugs, setSedationDrugs] = useState<EquipmentSection>({
-    "Acepromazine (ACP)": { selected: false },
-    "Dexmedetomidine (Precedex, Dexdomitor)": { selected: false },
-    "Medetomidine (Domitor)": { selected: false },
-    "Diazepam (Valium)": { selected: false },
-    "Midazolam (Versed)": { selected: false },
-    "Butorphanol (Torbugesic)": { selected: false },
-    "Buprenorphine (Buprenex)": { selected: false },
-    "Gabapentin": { selected: false },
-    "Trazodone": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  // Drug sections
+  const [opioids, setOpioids] = useState<EquipmentSection>({
+    "Morphine": { available: false, comments: "" },
+    "Methadone": { available: false, comments: "" },
+    "Meperidine (Demerol)": { available: false, comments: "" },
+    "Fentanyl": { available: false, comments: "" },
+    "Remifentanil": { available: false, comments: "" },
+    "Butorphanol": { available: false, comments: "" },
+    "Buprenorphine": { available: false, comments: "" },
+    "Tramadol": { available: false, comments: "" },
+    "Oxycodone": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
-  // Injectable Anesthetics
-  const [injectableAnesthetics, setInjectableAnesthetics] = useState<EquipmentSection>({
-    "Propofol (Diprivan, PropoFlo)": { selected: false },
-    "Ketamine (Ketaset)": { selected: false },
-    "Tiletamine/Zolazepam (Telazol)": { selected: false },
-    "Etomidate (Amidate)": { selected: false },
-    "Alfaxalone (Alfaxan)": { selected: false },
-    "Thiopental (Pentothal)": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  const [nsaids, setNsaids] = useState<EquipmentSection>({
+    "Optalgin": { available: false, comments: "" },
+    "Meloxicam": { available: false, comments: "" },
+    "Previcox": { available: false, comments: "" },
+    "Rimadyl": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
-  // Inhalation Anesthetics
-  const [inhalationAnesthetics, setInhalationAnesthetics] = useState<EquipmentSection>({
-    "Isoflurane": { selected: false },
-    "Sevoflurane": { selected: false },
-    "Desflurane": { selected: false },
-    "Nitrous Oxide (N2O)": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  const [sedation, setSedation] = useState<EquipmentSection>({
+    "Acepromazine": { available: false, comments: "" },
+    "Medetomidine (Domitor)": { available: false, comments: "" },
+    "Dexmedetomidine": { available: false, comments: "" },
+    "Xylazine": { available: false, comments: "" },
+    "Midazolam": { available: false, comments: "" },
+    "Diazepam": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
-  // Analgesics/Pain Management
-  const [analgesics, setAnalgesics] = useState<EquipmentSection>({
-    "Morphine": { selected: false },
-    "Fentanyl": { selected: false },
-    "Hydromorphone (Dilaudid)": { selected: false },
-    "Tramadol (Ultram)": { selected: false },
-    "Carprofen (Rimadyl)": { selected: false },
-    "Meloxicam (Metacam)": { selected: false },
-    "Lidocaine (local/IV)": { selected: false },
-    "Bupivacaine (Marcaine)": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  const [induction, setInduction] = useState<EquipmentSection>({
+    "Propofol 1%": { available: false, comments: "" },
+    "Propofol 2%": { available: false, comments: "" },
+    "Ketamine": { available: false, comments: "" },
+    "Tiletamine-zolazepam (Zoletil/Telazol)": { available: false, comments: "" },
+    "Alfaxalone": { available: false, comments: "" },
+    "Thiopental": { available: false, comments: "" },
+    "Etomidate": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
-  // Reversal Agents
-  const [reversalAgents, setReversalAgents] = useState<EquipmentSection>({
-    "Atipamezole (Antisedan)": { selected: false },
-    "Flumazenil (Romazicon)": { selected: false },
-    "Naloxone (Narcan)": { selected: false },
-    "Yohimbine": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  const [anestheticGases, setAnestheticGases] = useState<EquipmentSection>({
+    "Isoflurane": { available: false, comments: "" },
+    "Sevoflurane": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
-  // Anesthesia Machine
-  const [anesthesiaMachine, setAnesthesiaMachine] = useState(false);
+  const [localAnesthetics, setLocalAnesthetics] = useState<EquipmentSection>({
+    "Lidocaine": { available: false, comments: "" },
+    "Bupivacaine": { available: false, comments: "" },
+    "Ropivacaine": { available: false, comments: "" },
+    "EMLA": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
+  });
 
-  // Monitoring Parameters
-  const [monitoringParams, setMonitoringParams] = useState<EquipmentSection>({
-    "Heart Rate (HR)": { selected: false },
-    "Blood Pressure (BP)": { selected: false },
-    "Pulse Oximetry (SpO2)": { selected: false },
-    "End-tidal CO2 (EtCO2/Capnography)": { selected: false },
-    "ECG/EKG": { selected: false },
-    "Temperature": { selected: false },
-    "Respiratory Rate": { selected: false },
-    "Anesthetic Gas Concentration": { selected: false },
-    "Central Venous Pressure (CVP)": { selected: false },
-    "Other": { selected: false, otherText: "" }
+  const [supplementDrugs, setSupplementDrugs] = useState<EquipmentSection>({
+    "Dopamine": { available: false, comments: "" },
+    "Dobutamine": { available: false, comments: "" },
+    "Phenylephrine": { available: false, comments: "" },
+    "Ephedrine": { available: false, comments: "" },
+    "Atropine": { available: false, comments: "" },
+    "Glycopyrrolate": { available: false, comments: "" },
+    "Epinephrine": { available: false, comments: "" },
+    "Norepinephrine": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
+  });
+
+  // Equipment sections
+  const [anesthesiaMachine, setAnesthesiaMachine] = useState<MachineInfo>({
+    model: "",
+    image: undefined,
+    imagePreview: ""
+  });
+
+  const [breathingSystem, setBreathingSystem] = useState<SystemInfo>({
+    description: "",
+    image: undefined,
+    imagePreview: ""
+  });
+
+  const [infusionMachine, setInfusionMachine] = useState<SystemInfo>({
+    description: "",
+    image: undefined,
+    imagePreview: ""
+  });
+
+  const [heatingSystem, setHeatingSystem] = useState<EquipmentSection>({
+    "Blower": { available: false, comments: "" },
+    "Heating Pad": { available: false, comments: "" },
+    "Heated Infusion Set": { available: false, comments: "" },
+    "None": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
+  });
+
+  const [ventilator, setVentilator] = useState<{
+    available: boolean;
+    comments: string;
+    image?: File;
+    imagePreview?: string;
+  }>({
+    available: false,
+    comments: "",
+    image: undefined,
+    imagePreview: ""
+  });
+
+  const [monitoring, setMonitoring] = useState<EquipmentSection>({
+    "ECG": { available: false, comments: "" },
+    "Capnograph": { available: false, comments: "" },
+    "Pulse Ox": { available: false, comments: "" },
+    "BP (Oscillometer)": { available: false, comments: "" },
+    "Doppler": { available: false, comments: "" },
+    "Temperature": { available: false, comments: "" },
+    "Other": { available: false, comments: "" }
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -137,20 +200,28 @@ export default function AnesthesiaEquipment() {
     navigate('/');
   };
 
-  const updateSection = (
+  const updateEquipmentItem = (
     section: EquipmentSection,
     setSectionFunc: React.Dispatch<React.SetStateAction<EquipmentSection>>,
     item: string,
-    checked: boolean,
-    otherText?: string
+    available: boolean,
+    comments?: string
   ) => {
     setSectionFunc(prev => ({
       ...prev,
       [item]: {
-        selected: checked,
-        otherText: item === "Other" ? otherText || "" : prev[item]?.otherText
+        available,
+        comments: comments !== undefined ? comments : prev[item]?.comments || ""
       }
     }));
+  };
+
+  const handleImageUpload = async (file: File): Promise<string> => {
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => resolve(e.target?.result as string);
+      reader.readAsDataURL(file);
+    });
   };
 
   const handleSubmit = async () => {
@@ -160,17 +231,27 @@ export default function AnesthesiaEquipment() {
       // Prepare equipment data
       const equipmentData = {
         case_id: caseId,
-        sedation_drugs: sedationDrugs,
-        injectable_anesthetics: injectableAnesthetics,
-        inhalation_anesthetics: inhalationAnesthetics,
-        analgesics: analgesics,
-        reversal_agents: reversalAgents,
-        anesthesia_machine_available: anesthesiaMachine,
-        monitoring_parameters: monitoringParams,
+        drugs: {
+          opioids,
+          nsaids,
+          sedation,
+          induction,
+          anestheticGases,
+          localAnesthetics,
+          supplementDrugs
+        },
+        equipment: {
+          anesthesiaMachine,
+          breathingSystem,
+          infusionMachine,
+          heatingSystem,
+          ventilator,
+          monitoring
+        },
         created_at: new Date().toISOString()
       };
 
-      // Save to database (you'll need to create this table)
+      // Save to database
       const { error } = await supabase
         .from('anesthesia_equipment')
         .insert(equipmentData);
@@ -199,7 +280,7 @@ export default function AnesthesiaEquipment() {
     }
   };
 
-  const renderEquipmentSection = (
+  const renderDrugSection = (
     title: string,
     icon: React.ReactNode,
     section: EquipmentSection,
@@ -213,34 +294,214 @@ export default function AnesthesiaEquipment() {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-4">
           {Object.entries(section).map(([item, data]) => (
-            <div key={item} className="space-y-2">
+            <div key={item} className="space-y-3 p-3 border rounded-lg">
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id={`${title}-${item}`}
-                  checked={data.selected}
+                  checked={data.available}
                   onCheckedChange={(checked) =>
-                    updateSection(section, setSectionFunc, item, checked as boolean)
+                    updateEquipmentItem(section, setSectionFunc, item, checked as boolean)
                   }
                 />
-                <Label htmlFor={`${title}-${item}`} className="text-sm font-normal">
+                <Label htmlFor={`${title}-${item}`} className="text-sm font-medium">
                   {item}
                 </Label>
               </div>
-              {item === "Other" && data.selected && (
-                <Input
-                  placeholder="Please specify..."
-                  value={data.otherText || ""}
-                  onChange={(e) =>
-                    updateSection(section, setSectionFunc, item, true, e.target.value)
-                  }
-                  className="ml-6 max-w-xs"
-                />
+              {data.available && (
+                <div className="ml-6 space-y-2">
+                  <Textarea
+                    placeholder="Comments..."
+                    value={data.comments}
+                    onChange={(e) =>
+                      updateEquipmentItem(section, setSectionFunc, item, true, e.target.value)
+                    }
+                    className="min-h-[60px]"
+                  />
+                  {item === "Other" && (
+                    <Input
+                      placeholder="Please specify..."
+                      value={data.comments}
+                      onChange={(e) =>
+                        updateEquipmentItem(section, setSectionFunc, item, true, e.target.value)
+                      }
+                      className="max-w-xs"
+                    />
+                  )}
+                </div>
               )}
             </div>
           ))}
         </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderMachineSection = (
+    title: string,
+    icon: React.ReactNode,
+    machine: MachineInfo,
+    setMachine: React.Dispatch<React.SetStateAction<MachineInfo>>
+  ) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor={`${title}-model`}>Machine Model</Label>
+          <Input
+            id={`${title}-model`}
+            placeholder="Enter machine model..."
+            value={machine.model}
+            onChange={(e) => setMachine(prev => ({ ...prev, model: e.target.value }))}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${title}-image`}>Machine Image</Label>
+          <div className="flex items-center gap-3">
+            <Input
+              id={`${title}-image`}
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const preview = await handleImageUpload(file);
+                  setMachine(prev => ({ ...prev, image: file, imagePreview: preview }));
+                }
+              }}
+            />
+            <Camera className="h-5 w-5 text-muted-foreground" />
+          </div>
+          {machine.imagePreview && (
+            <img
+              src={machine.imagePreview}
+              alt="Machine preview"
+              className="mt-2 h-32 w-32 object-cover rounded border"
+            />
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderSystemSection = (
+    title: string,
+    icon: React.ReactNode,
+    system: SystemInfo,
+    setSystem: React.Dispatch<React.SetStateAction<SystemInfo>>
+  ) => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          {icon}
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div>
+          <Label htmlFor={`${title}-description`}>Description</Label>
+          <Input
+            id={`${title}-description`}
+            placeholder="Enter description..."
+            value={system.description}
+            onChange={(e) => setSystem(prev => ({ ...prev, description: e.target.value }))}
+          />
+        </div>
+        <div>
+          <Label htmlFor={`${title}-image`}>Image</Label>
+          <div className="flex items-center gap-3">
+            <Input
+              id={`${title}-image`}
+              type="file"
+              accept="image/*"
+              onChange={async (e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  const preview = await handleImageUpload(file);
+                  setSystem(prev => ({ ...prev, image: file, imagePreview: preview }));
+                }
+              }}
+            />
+            <Camera className="h-5 w-5 text-muted-foreground" />
+          </div>
+          {system.imagePreview && (
+            <img
+              src={system.imagePreview}
+              alt="System preview"
+              className="mt-2 h-32 w-32 object-cover rounded border"
+            />
+          )}
+        </div>
+      </CardContent>
+    </Card>
+  );
+
+  const renderVentilatorSection = () => (
+    <Card>
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Wind className="h-5 w-5" />
+          Ventilator
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="ventilator-available"
+            checked={ventilator.available}
+            onCheckedChange={(checked) =>
+              setVentilator(prev => ({ ...prev, available: checked as boolean }))
+            }
+          />
+          <Label htmlFor="ventilator-available">Available</Label>
+        </div>
+        {ventilator.available && (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="ventilator-comments">Comments</Label>
+              <Textarea
+                id="ventilator-comments"
+                placeholder="Comments..."
+                value={ventilator.comments}
+                onChange={(e) =>
+                  setVentilator(prev => ({ ...prev, comments: e.target.value }))
+                }
+                className="min-h-[60px]"
+              />
+            </div>
+            <div>
+              <Label htmlFor="ventilator-image">Ventilator Image</Label>
+              <div className="flex items-center gap-3">
+                <Input
+                  id="ventilator-image"
+                  type="file"
+                  accept="image/*"
+                  onChange={async (e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      const preview = await handleImageUpload(file);
+                      setVentilator(prev => ({ ...prev, image: file, imagePreview: preview }));
+                    }
+                  }}
+                />
+                <Camera className="h-5 w-5 text-muted-foreground" />
+              </div>
+              {ventilator.imagePreview && (
+                <img
+                  src={ventilator.imagePreview}
+                  alt="Ventilator preview"
+                  className="mt-2 h-32 w-32 object-cover rounded border"
+                />
+              )}
+            </div>
+          </div>
+        )}
       </CardContent>
     </Card>
   );
@@ -279,80 +540,111 @@ export default function AnesthesiaEquipment() {
           {/* Page Header */}
           <div className="text-center">
             <h1 className="text-3xl font-bold text-gray-900 mb-2">
-              Anesthesia & Monitoring Equipment
+              Clinic Equipment & Drug Inventory
             </h1>
             <p className="text-gray-600">
-              Please indicate which equipment and drugs you have available for this procedure
+              Please indicate which equipment and drugs you have available in your clinic
             </p>
             <p className="text-sm text-gray-500 mt-1">
               Case ID: {caseId}
             </p>
           </div>
 
-          {/* Equipment Sections */}
-          {renderEquipmentSection(
-            "Sedation/Premedication Drugs",
-            <Pill className="h-5 w-5" />,
-            sedationDrugs,
-            setSedationDrugs
-          )}
+          {/* Section 1 - Drugs */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">Section 1 - Drugs</h2>
 
-          {renderEquipmentSection(
-            "Injectable Anesthetics",
-            <Syringe className="h-5 w-5" />,
-            injectableAnesthetics,
-            setInjectableAnesthetics
-          )}
+            {renderDrugSection(
+              "Opioids",
+              <Pill className="h-5 w-5" />,
+              opioids,
+              setOpioids
+            )}
 
-          {renderEquipmentSection(
-            "Inhalation Anesthetics",
-            <Wind className="h-5 w-5" />,
-            inhalationAnesthetics,
-            setInhalationAnesthetics
-          )}
+            {renderDrugSection(
+              "NSAIDs",
+              <Pill className="h-5 w-5" />,
+              nsaids,
+              setNsaids
+            )}
 
-          {renderEquipmentSection(
-            "Analgesics/Pain Management",
-            <Activity className="h-5 w-5" />,
-            analgesics,
-            setAnalgesics
-          )}
+            {renderDrugSection(
+              "Sedation",
+              <Syringe className="h-5 w-5" />,
+              sedation,
+              setSedation
+            )}
 
-          {renderEquipmentSection(
-            "Reversal Agents",
-            <RotateCcw className="h-5 w-5" />,
-            reversalAgents,
-            setReversalAgents
-          )}
+            {renderDrugSection(
+              "Induction",
+              <Syringe className="h-5 w-5" />,
+              induction,
+              setInduction
+            )}
 
-          {/* Anesthesia Machine */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Cog className="h-5 w-5" />
-                Anesthesia Machine
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="anesthesia-machine"
-                  checked={anesthesiaMachine}
-                  onCheckedChange={(checked) => setAnesthesiaMachine(checked as boolean)}
-                />
-                <Label htmlFor="anesthesia-machine">
-                  Anesthesia Machine Available
-                </Label>
-              </div>
-            </CardContent>
-          </Card>
+            {renderDrugSection(
+              "Anesthetic Gases",
+              <Wind className="h-5 w-5" />,
+              anestheticGases,
+              setAnestheticGases
+            )}
 
-          {renderEquipmentSection(
-            "Monitoring Parameters Available",
-            <Monitor className="h-5 w-5" />,
-            monitoringParams,
-            setMonitoringParams
-          )}
+            {renderDrugSection(
+              "Local Anesthetics",
+              <Pill className="h-5 w-5" />,
+              localAnesthetics,
+              setLocalAnesthetics
+            )}
+
+            {renderDrugSection(
+              "Supplement Drugs",
+              <Activity className="h-5 w-5" />,
+              supplementDrugs,
+              setSupplementDrugs
+            )}
+          </div>
+
+          {/* Section 2 - Equipment */}
+          <div className="space-y-6">
+            <h2 className="text-2xl font-bold text-gray-900">Section 2 - Equipment</h2>
+
+            {renderMachineSection(
+              "Anesthetic Machine",
+              <Cog className="h-5 w-5" />,
+              anesthesiaMachine,
+              setAnesthesiaMachine
+            )}
+
+            {renderSystemSection(
+              "Breathing System",
+              <Wind className="h-5 w-5" />,
+              breathingSystem,
+              setBreathingSystem
+            )}
+
+            {renderSystemSection(
+              "Infusion Machine",
+              <Syringe className="h-5 w-5" />,
+              infusionMachine,
+              setInfusionMachine
+            )}
+
+            {renderDrugSection(
+              "Heating System",
+              <Activity className="h-5 w-5" />,
+              heatingSystem,
+              setHeatingSystem
+            )}
+
+            {renderVentilatorSection()}
+
+            {renderDrugSection(
+              "Monitoring",
+              <Monitor className="h-5 w-5" />,
+              monitoring,
+              setMonitoring
+            )}
+          </div>
 
           {/* Action Buttons */}
           <div className="flex justify-between pt-6 border-t">
