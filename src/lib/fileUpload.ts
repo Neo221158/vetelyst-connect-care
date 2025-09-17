@@ -122,7 +122,6 @@ export async function uploadFile(
 
     // Generate unique file path
     const filePath = generateFilePath(userId, file.name, caseId);
-    console.log('Generated file path:', filePath);
 
     // Upload file to Supabase Storage
     const { data, error } = await supabase.storage

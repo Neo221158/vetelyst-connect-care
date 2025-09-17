@@ -110,16 +110,7 @@ const veterinaryDrugs = [
 export default function DocumentUpload() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
-
-  // Show loading while checking authentication
-  if (loading) {
-    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
-  }
-
-  // Redirect if not authenticated
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
+  const { toast } = useToast();
 
   // Signalment state
   const [selectedSpecies, setSelectedSpecies] = useState<Species | null>(null);
@@ -162,27 +153,21 @@ export default function DocumentUpload() {
   // Submission state
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [patientName, setPatientName] = useState("");
-  const { toast } = useToast();
+
+  // Show loading while checking authentication
+  if (loading) {
+    return <div className="flex justify-center items-center min-h-screen">Loading...</div>;
+  }
+
+  // Redirect if not authenticated
+  if (!user) {
+    return <Navigate to="/auth" replace />;
+  }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     navigate('/');
   };
-
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-          <p>Loading...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return <Navigate to="/auth" replace />;
-  }
 
   const speciesOptions: { value: Species; label: string; icon: string }[] = [
     { value: "dog", label: "Dog", icon: "🐕" },
@@ -761,7 +746,6 @@ export default function DocumentUpload() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              {console.log('User ID for file upload:', user.id)}
               <FileUpload
                 type="bloodTests"
                 userId={user.id}
