@@ -240,10 +240,19 @@ async function linkFilesToCase(
  */
 export async function submitCase(data: CaseSubmissionData): Promise<CaseSubmissionResult> {
   try {
-    // Get current user
+    // Get current user and session
+    const { data: { session }, error: sessionError } = await supabase.auth.getSession();
     const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      return { success: false, error: 'Authentication required' };
+
+    console.log('Auth Debug:', {
+      session: session ? 'Present' : 'Missing',
+      user: user ? user.id : 'Missing',
+      sessionError,
+      authError
+    });
+
+    if (authError || !user || !session) {
+      return { success: false, error: `Authentication required. User: ${user ? 'Present' : 'Missing'}, Session: ${session ? 'Present' : 'Missing'}` };
     }
 
     // Validate data
