@@ -274,8 +274,8 @@ export default function DocumentUpload() {
           description: `Your case has been submitted for review. Case ID: ${result.caseId}`,
         });
 
-        // Navigate to a success page or dashboard
-        navigate('/dashboard');
+        // Navigate to anesthesia equipment page with case ID
+        navigate('/anesthesia-equipment', { state: { caseId: result.caseId } });
       } else {
         toast({
           title: "Submission Failed",
