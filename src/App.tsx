@@ -8,6 +8,7 @@ import Analytics from "./pages/Analytics";
 import Dashboard from "./pages/Dashboard";
 import DocumentUpload from "./pages/DocumentUpload";
 import AnesthesiaEquipment from "./pages/AnesthesiaEquipment";
+import SummaryDashboard from "./pages/SummaryDashboard";
 import Auth from "./pages/Auth";
 import NotFound from "./pages/NotFound";
 
@@ -25,6 +26,7 @@ const App = () => (
           <Route path="/dashboard" element={<DocumentUpload />} />
           <Route path="/upload" element={<DocumentUpload />} />
           <Route path="/anesthesia-equipment" element={<AnesthesiaEquipment />} />
+          <Route path="/summary" element={<SummaryDashboard />} />
           <Route path="/auth" element={<Auth />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />

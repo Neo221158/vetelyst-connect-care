@@ -876,6 +876,53 @@ export default function DocumentUpload() {
               </Button>
               <Button
                 variant="outline"
+                onClick={() => {
+                  // Create preview data for summary dashboard
+                  const previewData = {
+                    id: `preview-${Date.now()}`,
+                    patient_name: patientName,
+                    species: selectedSpecies || 'dog',
+                    breed: breed || 'Mixed Breed',
+                    age_years: age || 0,
+                    age_months: age === 0 ? parseInt(ageInMonths || '0') : 0,
+                    weight: parseFloat(weight) || 0,
+                    sex: 'unknown',
+                    spay_neuter_status: spayNeuterStatus || 'intact',
+                    chief_complaint: ccSurgeryType,
+                    history_of_present_illness: anesthesiaHistory || 'No history provided',
+                    temperature: parseFloat(tprTemperature) || 0,
+                    pulse: parseFloat(tprPulse) || 0,
+                    respiration: parseFloat(tprRespiratory) || 0,
+                    body_condition_score: 5,
+                    mucous_membranes: 'pink',
+                    medications: medications,
+                    uploaded_files: [...bloodTestFiles, ...medicalRecordFiles],
+                    physical_exam_findings: {
+                      cardiovascular,
+                      respiratory,
+                      gastrointestinal,
+                      urogenital,
+                      renal,
+                      hepatic,
+                      musculoskeletal,
+                      neurological,
+                      dermatological,
+                      ophthalmic,
+                      oralDental,
+                      lymphatic,
+                      endocrine
+                    },
+                    anesthesia_equipment: {},
+                    submitted_at: new Date().toISOString(),
+                    status: 'preview'
+                  };
+                  navigate('/summary', { state: { caseData: previewData } });
+                }}
+              >
+                Preview Summary
+              </Button>
+              <Button
+                variant="outline"
                 disabled={false}
                 onClick={() => {
                   console.log('Next button clicked - navigating to equipment page');

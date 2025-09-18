@@ -285,13 +285,86 @@ export default function AnesthesiaEquipment() {
         throw error;
       }
 
+      // Create complete case data with proper structure for dashboard
+      const completeSubmittedData = {
+        id: finalCaseId,
+        // Map patient information
+        patient_name: caseData.signalment?.patientName || 'Unknown Patient',
+        species: caseData.signalment?.species || 'dog',
+        breed: caseData.signalment?.breed || 'Mixed',
+        age_years: caseData.signalment?.ageYears || 0,
+        age_months: caseData.signalment?.ageMonths || 0,
+        weight: caseData.signalment?.weight || 0,
+        sex: 'Unknown', // Add sex field if needed
+        spay_neuter_status: caseData.signalment?.spayNeuterStatus || 'unknown',
+
+        // Map medical information
+        chief_complaint: caseData.chiefComplaint || '',
+        history_of_present_illness: '', // Add if needed
+
+        // Map TPR from medical examination
+        temperature: caseData.medicalExamination?.tpr?.temperature || 38.5,
+        pulse: caseData.medicalExamination?.tpr?.pulse || 80,
+        respiration: caseData.medicalExamination?.tpr?.respiration || 20,
+        body_condition_score: 5, // Default
+        mucous_membranes: 'pink', // Default
+
+        // Map medications
+        medications: caseData.medications || [],
+
+        // Map physical examination findings
+        physical_exam_findings: caseData.medicalExamination || {},
+
+        // Map uploaded files
+        uploaded_files: [
+          ...(caseData.bloodTestFiles || []).map((file: any) => ({
+            name: file.fileName || 'Unknown File',
+            type: file.fileName?.split('.').pop() || 'unknown',
+            size: file.fileSize || 0,
+            url: file.fileUrl || '',
+            category: 'blood_test'
+          })),
+          ...(caseData.medicalRecordFiles || []).map((file: any) => ({
+            name: file.fileName || 'Unknown File',
+            type: file.fileName?.split('.').pop() || 'unknown',
+            size: file.fileSize || 0,
+            url: file.fileUrl || '',
+            category: 'medical_record'
+          }))
+        ],
+
+        // Include all original data for reference
+        originalData: caseData,
+
+        // Equipment information
+        anesthesia_equipment: {
+          monitoring,
+          anesthesia_machine: anesthesiaMachine,
+          ventilator: ventilator,
+          infusion_machine: infusionMachine,
+          heating_system: heatingSystem,
+          drugs: {
+            sedation,
+            nsaids,
+            induction,
+            anestheticGases,
+            opioids,
+            localAnesthetics,
+            supplementDrugs
+          }
+        },
+
+        submitted_at: new Date().toISOString(),
+        status: 'submitted'
+      };
+
       toast({
         title: "Case Submitted Successfully!",
         description: `Your case and equipment information has been submitted for review. Case ID: ${finalCaseId}`,
       });
 
-      // Navigate back to dashboard
-      navigate('/dashboard');
+      // Navigate to summary dashboard with complete submitted data
+      navigate('/summary', { state: { caseData: completeSubmittedData } });
 
     } catch (error) {
       console.error('Error saving data:', error);
@@ -676,13 +749,95 @@ export default function AnesthesiaEquipment() {
             <Button variant="outline" onClick={() => navigate('/dashboard')}>
               Back to Dashboard
             </Button>
-            <Button
-              className="bg-gradient-primary hover:opacity-90"
-              disabled={isSubmitting}
-              onClick={handleSubmit}
-            >
-              {isSubmitting ? "Saving..." : "Save Equipment Information"}
-            </Button>
+            <div className="flex gap-3">
+              <Button
+                variant="outline"
+                onClick={() => {
+                  // Create combined case data for preview with proper structure
+                  const combinedData = {
+                    id: `preview-${Date.now()}`,
+                    // Map patient information
+                    patient_name: caseData.signalment?.patientName || 'Unknown Patient',
+                    species: caseData.signalment?.species || 'dog',
+                    breed: caseData.signalment?.breed || 'Mixed',
+                    age_years: caseData.signalment?.ageYears || 0,
+                    age_months: caseData.signalment?.ageMonths || 0,
+                    weight: caseData.signalment?.weight || 0,
+                    sex: 'Unknown',
+                    spay_neuter_status: caseData.signalment?.spayNeuterStatus || 'unknown',
+
+                    // Map medical information
+                    chief_complaint: caseData.chiefComplaint || '',
+                    history_of_present_illness: '',
+
+                    // Map TPR
+                    temperature: caseData.medicalExamination?.tpr?.temperature || 38.5,
+                    pulse: caseData.medicalExamination?.tpr?.pulse || 80,
+                    respiration: caseData.medicalExamination?.tpr?.respiration || 20,
+                    body_condition_score: 5,
+                    mucous_membranes: 'pink',
+
+                    // Map medications
+                    medications: caseData.medications || [],
+
+                    // Map physical examination findings
+                    physical_exam_findings: caseData.medicalExamination || {},
+
+                    // Map uploaded files
+                    uploaded_files: [
+                      ...(caseData.bloodTestFiles || []).map((file: any) => ({
+                        name: file.fileName || 'Unknown File',
+                        type: file.fileName?.split('.').pop() || 'unknown',
+                        size: file.fileSize || 0,
+                        url: file.fileUrl || '',
+                        category: 'blood_test'
+                      })),
+                      ...(caseData.medicalRecordFiles || []).map((file: any) => ({
+                        name: file.fileName || 'Unknown File',
+                        type: file.fileName?.split('.').pop() || 'unknown',
+                        size: file.fileSize || 0,
+                        url: file.fileUrl || '',
+                        category: 'medical_record'
+                      }))
+                    ],
+
+                    // Include all original data for reference
+                    originalData: caseData,
+
+                    // Equipment information
+                    anesthesia_equipment: {
+                      monitoring,
+                      anesthesia_machine: anesthesiaMachine,
+                      ventilator: ventilator,
+                      infusion_machine: infusionMachine,
+                      heating_system: heatingSystem,
+                      drugs: {
+                        sedation,
+                        nsaids,
+                        induction,
+                        anestheticGases,
+                        opioids,
+                        localAnesthetics,
+                        supplementDrugs
+                      }
+                    },
+
+                    submitted_at: new Date().toISOString(),
+                    status: 'preview'
+                  };
+                  navigate('/summary', { state: { caseData: combinedData } });
+                }}
+              >
+                Preview Summary
+              </Button>
+              <Button
+                className="bg-gradient-primary hover:opacity-90"
+                disabled={isSubmitting}
+                onClick={handleSubmit}
+              >
+                {isSubmitting ? "Saving..." : "Save Equipment Information"}
+              </Button>
+            </div>
           </div>
         </div>
       </main>

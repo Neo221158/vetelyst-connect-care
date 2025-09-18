@@ -242,7 +242,7 @@ export async function submitCase(data: CaseSubmissionData): Promise<CaseSubmissi
   try {
     // Get current user and session
     const { data: { session }, error: sessionError } = await supabase.auth.getSession();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    let { data: { user }, error: authError } = await supabase.auth.getUser();
 
     console.log('Auth Debug:', {
       session: session ? 'Present' : 'Missing',
@@ -251,7 +251,19 @@ export async function submitCase(data: CaseSubmissionData): Promise<CaseSubmissi
       authError
     });
 
-    if (authError || !user || !session) {
+    // If user is missing but session exists, try to refresh the session
+    if (authError && session && !user) {
+      console.log('Attempting to refresh session...');
+      const { data: refreshData, error: refreshError } = await supabase.auth.refreshSession();
+      if (!refreshError && refreshData.user) {
+        user = refreshData.user;
+        console.log('Session refreshed successfully, user:', user.id);
+      } else {
+        console.log('Session refresh failed:', refreshError);
+      }
+    }
+
+    if (!user || !session) {
       return { success: false, error: `Authentication required. User: ${user ? 'Present' : 'Missing'}, Session: ${session ? 'Present' : 'Missing'}` };
     }
 
